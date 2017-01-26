@@ -1,0 +1,41 @@
+#! /bin/bash
+#shift
+declare -a projects=()
+declare pwdDir=$(pwd)
+declare orderfilename="$pwdDir/mvnorder"
+
+if test -f $orderfilename; then
+   echo "$orderfilename found!" 
+   readarray -t projects < $orderfilename
+else
+echo "$orderfilename not found!"
+for dir in */pom.xml ; do
+    projects+=(${dir%/*})
+done
+fi
+declare i=0;
+echo "Build order will be"
+for project in "${projects[@]}"
+do
+((i++))
+echo "$i. $project"
+done;
+echo "";
+for project in "${projects[@]}"
+do
+	tput setaf 1; 
+	echo $project
+	tput setaf 7;
+	echo "cd $pwdDir/$project"
+	cd "$pwdDir/$project"
+	echo "mvn $@"
+	mvn $@|| { echo "Maven Unsuccessfull"; exit 1; }
+done
+
+
+
+       
+      
+
+      
+            
